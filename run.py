@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
-import contextlib
 import grp
 import os
 import pwd
+import signal
 import subprocess
 import sys
 import threading
 import time
 
+
+WSGI_MODULE = os.environ.get('WSGI_MODULE', 'app:app')
 
 os.chdir('/code')
 subprocess.run([
@@ -43,12 +45,13 @@ else:
         pass
 
     def chmod_master_fifo():
-        time.sleep(1)
-        os.chmod(master_fifo, 0o666)
+        while True:
+            time.sleep(1)
+            os.chmod(master_fifo, 0o666)
 
-    threading.Thread(target=chmod_master_fifo).start()
+    threading.Thread(target=chmod_master_fifo, daemon=True).start()
 
-    subprocess.run([
+    with subprocess.Popen([
         'uwsgi',
         '--uid', 'uwsgi',
         '--gid', 'uwsgi',
@@ -56,9 +59,10 @@ else:
         '--plugin', 'gevent',
         '--virtualenv', '/env',
         '--chdir', '/code',
-        '-w', os.environ.get('WSGI_MODULE', 'app:app'),
+        '-w', WSGI_MODULE,
         '--uwsgi-socket', os.environ.get('ADDRESS', '/run/wsgi.sock'),
         '--chmod-socket=666',
+        '--die-on-term',
         '--lazy-apps',
         '--master-fifo', master_fifo,
         '--workers', os.environ.get('WORKERS', '4'),
@@ -66,4 +70,9 @@ else:
         '--gevent', '1000',
         '--gevent-monkey-patch',
         '--disable-logging',
-    ])
+    ]) as uwsgi_process:
+        def term_handler(*args):
+            uwsgi_process.terminate()
+
+        signal.signal(signal.SIGTERM, term_handler)
+        uwsgi_process.wait()

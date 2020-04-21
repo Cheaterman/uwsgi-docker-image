@@ -20,7 +20,8 @@ RUN \
     su uwsgi -c $' \
         python3 -m venv /env && \
         source /env/bin/activate && \
-        pip3 install --no-cache-dir gevent \
+        pip install --no-cache-dir -U pip && \
+        pip install --no-cache-dir gevent \
     ' && \
     apk del \
         gcc \
