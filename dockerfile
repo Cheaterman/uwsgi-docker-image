@@ -6,6 +6,7 @@ RUN \
         uwsgi \
         uwsgi-python3 \
         uwsgi-gevent \
+        tzdata \
         gcc \
         musl-dev \
         python3-dev \
