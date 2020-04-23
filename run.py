@@ -44,10 +44,13 @@ else:
     except FileExistsError:
         pass
 
+    sockets_gid = int(os.environ.get('SOCKETS_GID', gid))
+
     def chmod_master_fifo():
         while True:
             time.sleep(1)
-            os.chmod(master_fifo, 0o666)
+            os.chown(master_fifo, uid, sockets_gid)
+            os.chmod(master_fifo, 0o660)
 
     threading.Thread(target=chmod_master_fifo, daemon=True).start()
 
@@ -61,7 +64,8 @@ else:
         '--chdir', '/code',
         '-w', WSGI_MODULE,
         '--uwsgi-socket', os.environ.get('ADDRESS', '/run/wsgi.sock'),
-        '--chmod-socket=666',
+        '--chmod-socket=660',
+        f'--chown-socket=uwsgi:{sockets_gid}',
         '--die-on-term',
         '--lazy-apps',
         '--master-fifo', master_fifo,
