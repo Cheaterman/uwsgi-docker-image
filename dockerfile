@@ -1,12 +1,7 @@
 FROM alpine
 
 RUN \
-    apk add \
-        python3 \
-        uwsgi \
-        uwsgi-python3 \
-        uwsgi-gevent \
-        tzdata \
+    apk add --no-cache --virtual .build-deps \
         gcc \
         musl-dev \
         python3-dev \
@@ -14,6 +9,14 @@ RUN \
         file \
         make \
         shadow \
+        postgresql-dev \
+        && \
+    apk add --no-cache \
+        python3 \
+        uwsgi \
+        uwsgi-python3 \
+        uwsgi-gevent \
+        tzdata \
         && \
     mkdir /env && \
     usermod -d / -s /bin/sh uwsgi && \
@@ -22,16 +25,10 @@ RUN \
         python3 -m venv /env && \
         source /env/bin/activate && \
         pip install --no-cache-dir -U pip && \
-        pip install --no-cache-dir gevent \
+        pip install --no-cache-dir gevent && \
+        pip install --no-cache-dir psycopg2 \
     ' && \
-    apk del \
-        gcc \
-        musl-dev \
-        python3-dev \
-        libffi-dev \
-        file \
-        make \
-        shadow
+    apk del --no-cache .build-deps
 
 ENV VIRTUAL_ENV /env
 ENV PATH /env/bin:$PATH
