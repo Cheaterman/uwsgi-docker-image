@@ -17,6 +17,7 @@ RUN \
         uwsgi-python3 \
         uwsgi-gevent \
         tzdata \
+        libpq \
         && \
     mkdir /env && \
     usermod -d / -s /bin/sh uwsgi && \
