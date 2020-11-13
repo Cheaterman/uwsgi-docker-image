@@ -40,7 +40,7 @@ subprocess.run([
 
 
 if len(sys.argv) > 1 and sys.argv[1] == 'sh':
-    subprocess.run(['su', 'uwsgi'])
+    subprocess.run(['su', 'uwsgi'], check=True)
 
 else:
     uid, gid = (
