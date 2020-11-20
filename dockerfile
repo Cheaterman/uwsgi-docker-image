@@ -36,7 +36,5 @@ ENV PATH /env/bin:$PATH
 
 ADD run.py /run.py
 
-VOLUME /code /run
-
 CMD []
 ENTRYPOINT ["/run.py"]
