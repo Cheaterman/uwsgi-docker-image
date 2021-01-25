@@ -21,18 +21,6 @@ subprocess.run([
         'install',
         '--no-cache-dir',
         '--upgrade',
-        'pip',
-    )),
-], check=True)
-subprocess.run([
-    'su',
-    'uwsgi',
-    '-c',
-    ' '.join((
-        'pip',
-        'install',
-        '--no-cache-dir',
-        '--upgrade',
         '--requirement',
         os.environ.get('REQUIREMENTS_FILE', 'requirements.txt'),
     )),
