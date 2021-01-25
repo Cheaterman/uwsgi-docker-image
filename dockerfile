@@ -27,7 +27,7 @@ RUN \
         python3 -m venv /env && \
         source /env/bin/activate && \
         pip install --no-cache-dir -U pip && \
-        pip install --no-cache-dir gevent==1.4.0 && \
+        pip install --no-cache-dir gevent && \
         pip install --no-cache-dir psycopg2 \
     ' && \
     apk del --no-cache .build-deps
