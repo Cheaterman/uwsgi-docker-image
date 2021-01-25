@@ -2,6 +2,7 @@ FROM alpine
 
 RUN \
     apk add --no-cache --virtual .build-deps \
+        build-base \
         gcc \
         musl-dev \
         python3-dev \
