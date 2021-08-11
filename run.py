@@ -12,20 +12,21 @@ import time
 WSGI_MODULE = os.environ.get('WSGI_MODULE', 'app:app')
 
 os.chdir('/code')
-subprocess.run([
-    'su',
-    'uwsgi',
-    '-c',
-    ' '.join((
-        'pip',
-        'install',
-        '--no-cache-dir',
-        '--upgrade',
-        '--requirement',
-        os.environ.get('REQUIREMENTS_FILE', 'requirements.txt'),
-    )),
-], check=True)
 
+if os.environ.get('UPGRADE_REQUIREMENTS'):
+    subprocess.run([
+        'su',
+        'uwsgi',
+        '-c',
+        ' '.join((
+            'pip',
+            'install',
+            '--no-cache-dir',
+            '--upgrade',
+            '--requirement',
+            os.environ.get('REQUIREMENTS_FILE', 'requirements.txt'),
+        )),
+    ], check=True)
 
 if len(sys.argv) > 1 and sys.argv[1] == 'sh':
     subprocess.run(['su', 'uwsgi'], check=True)
