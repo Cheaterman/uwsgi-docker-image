@@ -10,6 +10,7 @@ import time
 
 
 WSGI_MODULE = os.environ.get('WSGI_MODULE', 'app:app')
+SCRIPT_NAME = os.environ.get('SCRIPT_NAME', '/')
 
 os.chdir('/code')
 
@@ -64,7 +65,7 @@ else:
         '--plugin', 'gevent',
         '--virtualenv', '/env',
         '--chdir', '/code',
-        '-w', WSGI_MODULE,
+        '--mount', f'{SCRIPT_NAME}={WSGI_MODULE}',
         '--uwsgi-socket', os.environ.get('ADDRESS', '/run/wsgi.sock'),
         '--chmod-socket=660',
         f'--chown-socket=uwsgi:{wsgi_socket_gid}',
@@ -78,6 +79,7 @@ else:
         '--ignore-sigpipe',
         '--ignore-write-errors',
         '--disable-write-exception',
+        '--manage-script-name',
     ]) as uwsgi_process:
         def term_handler(*args):
             uwsgi_process.terminate()
